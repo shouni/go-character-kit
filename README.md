@@ -95,7 +95,38 @@ func main() {
 }
 ```
 
-### 2. 同梱キャラクター定義を読み込む
+### 2. Go の構造体から初期化する
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/shouni/go-character-kit/character"
+)
+
+func main() {
+	chars, err := character.NewCharacters([]character.Character{
+		{
+			ID:           "zundamon",
+			Name:         "Zundamon",
+			ReferenceURL: "gs://bucket/zundamon.png",
+			VisualCues:   []string{"green hair"},
+			IsDefault:    true,
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	char := chars.GetCharacterWithDefault("ZUNDAMON")
+	fmt.Println(char.ID, char.Name)
+}
+```
+
+### 3. 同梱キャラクター定義を読み込む
 
 ```go
 package main
@@ -125,7 +156,7 @@ func main() {
 
 | パッケージ | 内容 |
 | --- | --- |
-| `github.com/shouni/go-character-kit/character` | キャラクターのドメインモデル、JSONパース、検証、検索ヘルパー。 |
+| `github.com/shouni/go-character-kit/character` | キャラクターのドメインモデル、初期化、JSONパース、検証、検索ヘルパー。 |
 | `github.com/shouni/go-character-kit/assets` | `go:embed` された同梱キャラクター定義JSONの読み込み。 |
 
 > `character` ディレクトリの package 名も `character` に揃えているため、利用側は alias なしで自然に import できます。
@@ -134,7 +165,7 @@ func main() {
 
 ## 🛡 バリデーション (Validation)
 
-`ParseCharacters` は、読み込み時に以下の設定ミスを検出します。
+`NewCharacters` / `ParseCharacters` は、初期化時に以下の設定ミスを検出します。
 
 * キャラクター定義が空
 * `id` / `name` / `reference_url` / `visual_cues` の不足
