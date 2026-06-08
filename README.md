@@ -25,17 +25,7 @@
 * **🛡 Validation First**:
   * 空ID、重複ID、参照画像URL不足、VisualCues不足、複数デフォルト指定など、設定ミスをパース時に検出します。
 * **📦 Embedded Character Assets**:
-  * `assets` パッケージから、リポジトリ同梱のキャラクター定義を `go:embed` 経由で読み込めます。
-
----
-
-## 📦 インストール (Installation)
-
-```bash
-go get github.com/shouni/go-character-kit
-```
-
-本モジュールは `go.mod` 上で **Go 1.26** を対象にしています。
+  * `assets` パッケージから、リポジトリ同梱のキャラクター定義JSONを `go:embed` されたデータとして読み込めます。
 
 ---
 
@@ -82,11 +72,11 @@ import (
 	"fmt"
 	"log"
 
-	domain "github.com/shouni/go-character-kit/character"
+	"github.com/shouni/go-character-kit/character"
 )
 
 func main() {
-	chars, err := domain.ParseCharacters([]byte(`[
+	chars, err := character.ParseCharacters([]byte(`[
 		{
 			"id": "zundamon",
 			"name": "Zundamon",
@@ -136,9 +126,9 @@ func main() {
 | パッケージ | 内容 |
 | --- | --- |
 | `github.com/shouni/go-character-kit/character` | キャラクターのドメインモデル、JSONパース、検証、検索ヘルパー。 |
-| `github.com/shouni/go-character-kit/assets` | `go:embed` されたデフォルトキャラクター定義の読み込み。 |
+| `github.com/shouni/go-character-kit/assets` | `go:embed` された同梱キャラクター定義JSONの読み込み。 |
 
-> `character` ディレクトリの package 名は `domain` です。利用側では `domain "github.com/shouni/go-character-kit/character"` のように alias import するのがおすすめです。
+> `character` ディレクトリの package 名も `character` に揃えているため、利用側は alias なしで自然に import できます。
 
 ---
 
@@ -158,24 +148,16 @@ func main() {
 
 ```text
 go-character-kit/
-├── assets/                   # 【埋め込み定義】同梱キャラクターJSONと読み込み処理。
+├── assets/                   # 【同梱定義】キャラクターJSONの埋め込みと読み込み。
 │   ├── assets.go
 │   └── characters/
 │       └── characters.json
-├── character/                # 【ドメイン】Character定義、Parse/Validate/Lookup。
+├── character/                # 【ドメイン】キャラクターの型定義・検証・検索。
 │   ├── character.go
 │   ├── character_helpers.go
 │   └── character_test.go
 ├── go.mod
 └── README.md
-```
-
----
-
-## 🧪 テスト (Testing)
-
-```bash
-go test ./...
 ```
 
 ---
