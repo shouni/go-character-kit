@@ -4,8 +4,6 @@
 [![Go Version](https://img.shields.io/github/go-mod/go-version/shouni/go-character-kit)](https://go.dev/)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/shouni/go-character-kit)](https://github.com/shouni/go-character-kit/tags)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Go Report Card](https://goreportcard.com/badge/github.com/shouni/go-character-kit)](https://goreportcard.com/report/github.com/shouni/go-character-kit)
-[![Go Reference](https://pkg.go.dev/badge/github.com/shouni/go-character-kit.svg)](https://pkg.go.dev/github.com/shouni/go-character-kit)
 [![Status](https://img.shields.io/badge/Status-Active-brightgreen)](#)
 
 ## 🚀 概要 (About) - キャラクターDNA管理キット
