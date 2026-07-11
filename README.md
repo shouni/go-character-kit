@@ -21,7 +21,7 @@
 * **🔍 Safe Lookup Helpers**:
   * ID 検索、大小文字を吸収した検索、未指定時のデフォルトキャラクター fallback を提供します。
 * **🛡 Validation First**:
-  * 空ID、重複ID、参照画像URL不足、VisualCues不足、複数デフォルト指定など、設定ミスをパース時に検出します。
+  * 空ID、重複ID、名前不足、参照画像URL不足、VisualCues不足、複数デフォルト指定など、設定ミスをパース時に検出します。
 * **📦 Embedded Character Assets**:
   * `assets` パッケージから、リポジトリ同梱のキャラクター定義JSONを `go:embed` されたデータとして読み込めます。
 
@@ -177,16 +177,8 @@ func main() {
 
 ```text
 go-character-kit/
-├── assets/                   # 【同梱定義】キャラクターJSONの埋め込みと読み込み。
-│   ├── assets.go
-│   └── characters/
-│       └── characters.json
-├── character/                # 【ドメイン】キャラクターの型定義・検証・検索。
-│   ├── character.go
-│   ├── character_helpers.go
-│   └── character_test.go
-├── go.mod
-└── README.md
+├── assets/       # 【同梱定義】キャラクターJSONの埋め込みと読み込み。
+└── character/    # 【ドメイン】キャラクターの型定義・検証・検索。
 ```
 
 ---
