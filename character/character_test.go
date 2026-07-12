@@ -56,6 +56,45 @@ func TestParseCharactersBuildsListAndLookup(t *testing.T) {
 	assert.Equal(t, "zundamon", chars.GetCharacterWithDefault("").ID)
 }
 
+func TestCharacterReferenceURLForPrefersAspectRatioMatch(t *testing.T) {
+	t.Parallel()
+
+	char := Character{
+		ID:           "tsumugi",
+		ReferenceURL: "gs://bucket/tsumugi-16x9.png",
+		ReferenceURLs: map[string]string{
+			"9:16": "gs://bucket/tsumugi-9x16.png",
+			"1:1":  "gs://bucket/tsumugi-1x1.png",
+		},
+	}
+
+	assert.Equal(t, "gs://bucket/tsumugi-9x16.png", char.ReferenceURLFor("9:16"))
+	assert.Equal(t, "gs://bucket/tsumugi-1x1.png", char.ReferenceURLFor("1:1"))
+}
+
+func TestCharacterReferenceURLForFallsBackWhenAspectRatioMissing(t *testing.T) {
+	t.Parallel()
+
+	char := Character{
+		ID:           "tsumugi",
+		ReferenceURL: "gs://bucket/tsumugi-16x9.png",
+		ReferenceURLs: map[string]string{
+			"9:16": "gs://bucket/tsumugi-9x16.png",
+		},
+	}
+
+	// No "4:3" entry, and no aspect ratio requested at all: both fall back to ReferenceURL.
+	assert.Equal(t, "gs://bucket/tsumugi-16x9.png", char.ReferenceURLFor("4:3"))
+	assert.Equal(t, "gs://bucket/tsumugi-16x9.png", char.ReferenceURLFor(""))
+}
+
+func TestCharacterReferenceURLForNilCharacterReturnsEmpty(t *testing.T) {
+	t.Parallel()
+
+	var char *Character
+	assert.Equal(t, "", char.ReferenceURLFor("9:16"))
+}
+
 func TestParseCharactersRejectsDuplicateIDs(t *testing.T) {
 	t.Parallel()
 
