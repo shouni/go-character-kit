@@ -28,11 +28,16 @@
     "id": "tsumugi",
     "name": "Tsumugi",
     "seed": 208222065,
-    "reference_url": "gs://ap-manga/character/design_tsumugi.png",
+    "reference_url": "gs://ap-manga/character/tsumugi/default.png",
+    "reference_urls": {
+      "16:9": "gs://ap-manga/character/tsumugi/16x9.png",
+      "9:16": "gs://ap-manga/character/tsumugi/9x16.png",
+      "1:1": "gs://ap-manga/character/tsumugi/1x1.png"
+    },
     "visual_cues": [
       "short brownish-orange hair with a right-side ponytail that flows past the shoulder",
       "bright light-blue eyes, energetic and cheerful expression",
-      "oversized yellow cardigan with exactly three colorful bandages (pink, green, blue) fixed on the right sleeve, and one round cat-face badge pinned on the left chest — always visible, same position in every shot",
+      "oversized mustard/khaki-yellow cardigan with a black-and-magenta striped armband on one sleeve, and a cluster of pins on the chest on the same side as the armband — a star-shaped pin, a small round badge with decorative (non-legible) text, and a round cat-face patch — plus a few small colorful bandages scattered across the jacket front and sleeve, always in this same cluster arrangement",
       "dark grey collared shirt with a yellow necktie",
       "pink-and-black plaid pleated skirt",
       "white loose socks, brown loafers, and one bandage on the left knee",
