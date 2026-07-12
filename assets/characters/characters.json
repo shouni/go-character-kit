@@ -28,7 +28,12 @@
     "id": "tsumugi",
     "name": "Tsumugi",
     "seed": 208222065,
-    "reference_url": "gs://ap-manga/character/design_tsumugi.png",
+    "reference_url": "gs://ap-manga/character/tsumugi/default.png",
+    "reference_urls": {
+      "16:9": "gs://ap-manga/character/tsumugi/16x9.png",
+      "9:16": "gs://ap-manga/character/tsumugi/9x16.png",
+      "1:1": "gs://ap-manga/character/tsumugi/1x1.png"
+    },
     "visual_cues": [
       "short brownish-orange hair with a right-side ponytail that flows past the shoulder",
       "bright light-blue eyes, energetic and cheerful expression",
