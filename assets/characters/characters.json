@@ -1,38 +1,13 @@
 [
   {
-    "id": "zundamon",
-    "name": "Zundamon",
-    "seed": 10001,
-    "reference_url": "gs://ap-manga/character/design_zundamon.jpg",
-    "visual_cues": [
-      "vibrant emerald green hair",
-      "soybean earmuffs",
-      "strictly following the design from reference"
-    ],
-    "is_default": false
-  },
-  {
-    "id": "metan",
-    "name": "Metan",
-    "seed": 20001,
-    "reference_url": "gs://ap-manga/character/design_metan.jpg",
-    "visual_cues": [
-      "vibrant lavender hair",
-      "massive twin-tails with spiral curls",
-      "sharp red eyes",
-      "strictly following the design from reference"
-    ],
-    "is_default": false
-  },
-  {
     "id": "tsumugi",
     "name": "Tsumugi",
     "seed": 208222065,
-    "reference_url": "gs://ap-manga/character/tsumugi/default.png",
+    "reference_url": "gs://ap-comic/character-reference/tsumugi/default.png",
     "reference_urls": {
-      "16:9": "gs://ap-manga/character/tsumugi/16x9.png",
-      "9:16": "gs://ap-manga/character/tsumugi/9x16.png",
-      "1:1": "gs://ap-manga/character/tsumugi/1x1.png"
+      "16:9": "gs://ap-comic/character-reference/tsumugi/16x9.png",
+      "9:16": "gs://ap-comic/character-reference/tsumugi/9x16.png",
+      "1:1": "gs://ap-comic/character-reference/tsumugi/1x1.png"
     },
     "visual_cues": [
       "short brownish-orange hair with a right-side ponytail that flows past the shoulder",
@@ -44,5 +19,40 @@
       "strictly following the design from reference"
     ],
     "is_default": true
+  },
+  {
+    "id": "zundamon",
+    "name": "Zundamon",
+    "seed": 100000001,
+    "reference_url": "gs://ap-comic/character-reference/zundamon/default.png",
+    "visual_cues": [
+      "vibrant green bob-cut hair",
+      "two soybean-pod-shaped antenna ornaments sticking up from the head like rabbit ears",
+      "amber/orange round eyes",
+      "light green neck ribbon with a pink bow",
+      "white puff-sleeve blouse",
+      "olive-green suspender shorts overalls with pink round buttons, pink shorts underneath",
+      "green ankle boots with pink accents",
+      "large green soybean-pod-shaped tail",
+      "strictly following the design from reference"
+    ],
+    "is_default": false
+  },
+  {
+    "id": "metan",
+    "name": "Metan",
+    "seed": 200000001,
+    "reference_url": "gs://ap-comic/character-reference/metan/default.jpg",
+    "visual_cues": [
+      "vibrant purple hair",
+      "massive twin-tails with spiral curls, tied high near the crown with white ribbon bows on both sides, same tie point and silhouette clearly visible from the front, side, and back",
+      "bright red eyes",
+      "white lace-trimmed dress with black corset-style front lacing and a black underskirt panel, ruffled white collar",
+      "red ribbon bow tie at the collar",
+      "white thigh-high stockings",
+      "black low-heel mary-jane shoes with red ribbon bow accents",
+      "strictly following the design from reference"
+    ],
+    "is_default": false
   }
 ]
