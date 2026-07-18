@@ -25,6 +25,9 @@
     "name": "Zundamon",
     "seed": 10000,
     "reference_url": "gs://ap-comic/character-reference/zundamon/default.png",
+    "reference_urls": {
+      "16:9": "gs://ap-comic/character-reference/zundamon/16x9.png"
+    },
     "visual_cues": [
       "vibrant green bob-cut hair",
       "two soybean-pod-shaped antenna ornaments sticking up from the head like rabbit ears",
@@ -42,7 +45,10 @@
     "id": "metan",
     "name": "Metan",
     "seed": 20000,
-    "reference_url": "gs://ap-comic/character-reference/metan/default.jpg",
+    "reference_url": "gs://ap-comic/character-reference/metan/default.png",
+    "reference_urls": {
+      "16:9": "gs://ap-comic/character-reference/metan/16x9.png"
+    },
     "visual_cues": [
       "vibrant purple hair",
       "massive twin-tails with spiral curls, tied high near the crown with white ribbon bows on both sides, same tie point and silhouette clearly visible from the front, side, and back",
