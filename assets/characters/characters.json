@@ -23,7 +23,7 @@
   {
     "id": "zundamon",
     "name": "Zundamon",
-    "seed": 100000001,
+    "seed": 10000,
     "reference_url": "gs://ap-comic/character-reference/zundamon/default.png",
     "visual_cues": [
       "vibrant green bob-cut hair",
@@ -41,7 +41,7 @@
   {
     "id": "metan",
     "name": "Metan",
-    "seed": 200000001,
+    "seed": 20000,
     "reference_url": "gs://ap-comic/character-reference/metan/default.jpg",
     "visual_cues": [
       "vibrant purple hair",
