@@ -8,15 +8,15 @@ import (
 
 // GetCharacter は、指定されたID（またはその小文字版）からキャラクター情報を特定します。
 // マップに存在する場合はそのポインタを返し、存在しない場合は nil を返します。
-func (c *Characters) GetCharacter(ID string) *Character {
+func (c *Characters) GetCharacter(id string) *Character {
 	if c == nil || c.ByID == nil {
 		return nil
 	}
 
 	// 1. 直接のIDで検索、見つからなければ小文字に正規化して再検索
-	char, ok := c.ByID[ID]
+	char, ok := c.ByID[id]
 	if !ok {
-		char, ok = c.ByID[strings.ToLower(ID)]
+		char, ok = c.ByID[strings.ToLower(id)]
 	}
 
 	if ok {
@@ -43,8 +43,8 @@ func (c *Characters) GetDefault() *Character {
 
 // GetCharacterWithDefault は、指定されたIDでキャラクターを検索し、見つからない場合はデフォルトのキャラクターを返します。
 // どちらのキャラクターも見つからない場合は nil を返します。
-func (c *Characters) GetCharacterWithDefault(ID string) *Character {
-	char := c.GetCharacter(ID)
+func (c *Characters) GetCharacterWithDefault(id string) *Character {
+	char := c.GetCharacter(id)
 	if char != nil {
 		return char
 	}

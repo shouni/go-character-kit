@@ -1,3 +1,5 @@
+// Package character は、生成プロンプトへ注入するキャラクター定義の型と
+// その検索・検証を提供します。
 package character
 
 // Character は漫画に登場するキャラクターの定義を保持します。
