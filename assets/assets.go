@@ -1,3 +1,4 @@
+// Package assets は、既定のキャラクター定義を埋め込みリソースとして提供します。
 package assets
 
 import (
