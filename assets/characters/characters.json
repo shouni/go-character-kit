@@ -3,11 +3,11 @@
     "id": "tsumugi",
     "name": "Tsumugi",
     "seed": 208222065,
-    "reference_url": "gs://ap-comic/character-reference/tsumugi/default.png",
+    "reference_url": "gs://ap-story/character-reference/tsumugi/default.png",
     "reference_urls": {
-      "16:9": "gs://ap-comic/character-reference/tsumugi/16x9.png",
-      "9:16": "gs://ap-comic/character-reference/tsumugi/9x16.png",
-      "1:1": "gs://ap-comic/character-reference/tsumugi/1x1.png"
+      "16:9": "gs://ap-story/character-reference/tsumugi/16x9.png",
+      "9:16": "gs://ap-story/character-reference/tsumugi/9x16.png",
+      "1:1": "gs://ap-story/character-reference/tsumugi/1x1.png"
     },
     "visual_cues": [
       "short brownish-orange hair with a right-side ponytail that flows past the shoulder",
@@ -24,9 +24,9 @@
     "id": "zundamon",
     "name": "Zundamon",
     "seed": 10000,
-    "reference_url": "gs://ap-comic/character-reference/zundamon/default.png",
+    "reference_url": "gs://ap-story/character-reference/zundamon/default.png",
     "reference_urls": {
-      "16:9": "gs://ap-comic/character-reference/zundamon/16x9.png"
+      "16:9": "gs://ap-story/character-reference/zundamon/16x9.png"
     },
     "visual_cues": [
       "vibrant green bob-cut hair",
@@ -45,9 +45,9 @@
     "id": "metan",
     "name": "Metan",
     "seed": 20000,
-    "reference_url": "gs://ap-comic/character-reference/metan/default.png",
+    "reference_url": "gs://ap-story/character-reference/metan/default.png",
     "reference_urls": {
-      "16:9": "gs://ap-comic/character-reference/metan/16x9.png"
+      "16:9": "gs://ap-story/character-reference/metan/16x9.png"
     },
     "visual_cues": [
       "vibrant purple hair",
