@@ -10,12 +10,14 @@
       "1:1": "gs://ap-story/character-reference/tsumugi/1x1.png"
     },
     "visual_cues": [
-      "short brownish-orange hair with a right-side ponytail that flows past the shoulder",
+      "short brownish-orange hair with a single high ponytail on her LEFT side — falling on the viewer's right when she faces the camera — that flows past the shoulder",
       "bright light-blue eyes, energetic and cheerful expression",
-      "oversized mustard/khaki-yellow cardigan with a black-and-magenta striped armband on one sleeve, and a cluster of pins on the chest on the same side as the armband — a star-shaped pin, a small round badge with decorative (non-legible) text, and a round cat-face patch — plus a few small colorful bandages scattered across the jacket front and sleeve, always in this same cluster arrangement",
+      "oversized mustard/khaki-yellow cardigan with a black-and-magenta striped armband worn on her RIGHT upper arm — the arm on the viewer's left when she faces the camera, and on the viewer's right when she is seen from behind — never on the other arm",
+      "a cluster of pins on the RIGHT side of her chest, the same side as the armband — a star-shaped pin, a small round badge with decorative (non-legible) text, and a round cat-face patch — all three worn flat on the chest and never on the armband itself, always in this same cluster arrangement",
+      "a few small colorful bandages scattered across the jacket front and sleeve",
       "dark grey collared shirt with a yellow necktie",
       "pink-and-black plaid pleated skirt",
-      "white loose socks, brown loafers, and one bandage on the left knee",
+      "white loose socks, brown loafers, and one small bandage on a shin",
       "strictly following the design from reference"
     ],
     "is_default": true
