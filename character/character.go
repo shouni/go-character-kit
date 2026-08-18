@@ -2,6 +2,11 @@
 // その検索・検証を提供します。
 package character
 
+import (
+	"maps"
+	"slices"
+)
+
 // Character は漫画に登場するキャラクターの定義を保持します。
 type Character struct {
 	ID         string   `json:"id"`
@@ -35,8 +40,25 @@ func (c *Character) ReferenceURLFor(aspectRatio string) string {
 	return c.ReferenceURL
 }
 
-// Characters は表示順を持つリストとID検索用マップを保持します。
-type Characters struct {
-	List []Character
-	ByID map[string]*Character
+// clone は参照型フィールドまで複製したコピーを返します。
+func (c Character) clone() Character {
+	c.VisualCues = slices.Clone(c.VisualCues)
+	c.ReferenceURLs = maps.Clone(c.ReferenceURLs)
+	if c.Seed != nil {
+		seed := *c.Seed
+		c.Seed = &seed
+	}
+	return c
+}
+
+// cloneList は各要素を深いコピーで複製したリストを返します。
+func cloneList(list []Character) []Character {
+	if list == nil {
+		return nil
+	}
+	cloned := make([]Character, len(list))
+	for i := range list {
+		cloned[i] = list[i].clone()
+	}
+	return cloned
 }
