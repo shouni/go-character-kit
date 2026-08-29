@@ -1,12 +1,14 @@
 # 🎨 Go Character Kit
 
+[![CI](https://github.com/shouni/go-character-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/shouni/go-character-kit/actions/workflows/ci.yml)
+[![Status](https://img.shields.io/badge/Status-Active-brightgreen)](#)
 [![Language](https://img.shields.io/badge/Language-Go-blue)](https://go.dev/)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/shouni/go-character-kit)](https://go.dev/)
 [![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/shouni/go-character-kit)](https://github.com/shouni/go-character-kit/tags)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Status](https://img.shields.io/badge/Status-Active-brightgreen)](#)
+[![Go Reference](https://pkg.go.dev/badge/github.com/shouni/go-character-kit.svg)](https://pkg.go.dev/github.com/shouni/go-character-kit)
 
-## 🚀 概要 (About) - キャラクターDNA管理キット
+## 🚀 概要 (About) - Seed と参照アセットを固定して、キャラクターをぶれさせない
 
 **Go Character Kit** は、画像生成・漫画生成ワークフローで利用する **キャラクターDNA** を、JSON 定義として安全に読み込み・検証・参照するための小さな Go ライブラリです。
 
