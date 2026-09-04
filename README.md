@@ -16,7 +16,7 @@
 
 ---
 
-## ✨ コア・コンセプト (Core Concepts)
+## ✨ 提供機能 (Features)
 
 * **🧬 Character DNA Definition**:
   * `id` / `name` / `seed` / `reference_url` / `reference_urls` / `visual_cues` をまとめて定義し、キャラクターの一貫性維持に必要な情報を扱います。
@@ -68,7 +68,7 @@
 
 ---
 
-## ⚙️ 使い方 (Usage)
+## 🚦 使い方 (Usage)
 
 ### 1. JSON から読み込む
 
@@ -138,7 +138,7 @@ overridden := chars.WithSeedOverride("zundamon", 999)
 
 ---
 
-## 🧩 パッケージ構成 (Packages)
+## 📦 パッケージ構成 (Package Structure)
 
 | パッケージ | 内容 |
 | --- | --- |
