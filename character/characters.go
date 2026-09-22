@@ -1,8 +1,11 @@
 package character
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"maps"
 	"regexp"
 	"slices"
@@ -28,10 +31,22 @@ func NewCharacters(list []Character) (*Characters, error) {
 }
 
 // ParseCharacters はJSONバイト列からキャラクター定義をパースして返します。
+//
+// 定義に無いフィールド名はエラーです。"sead" や "referense_urls" のような打ち間違いを
+// 黙って読み飛ばすと、Seed が nil になったり比率別の参照画像が既定へ落ちたりするだけで、
+// 何も言わずに生成結果が変わります。reference_urls のキーの形を検証しているのと同じ
+// 理由で、フィールド名も検証します。
 func ParseCharacters(charactersJSON []byte) (*Characters, error) {
+	dec := json.NewDecoder(bytes.NewReader(charactersJSON))
+	dec.DisallowUnknownFields()
+
 	var list []Character
-	if err := json.Unmarshal(charactersJSON, &list); err != nil {
+	if err := dec.Decode(&list); err != nil {
 		return nil, fmt.Errorf("キャラクター情報のJSONパースに失敗しました: %w", err)
+	}
+	// Decode は最初の値だけを読むので、後ろに続くものが無いことを確かめます。
+	if _, err := dec.Token(); !errors.Is(err, io.EOF) {
+		return nil, fmt.Errorf("キャラクター情報のJSONに配列の後ろへ続く内容があります")
 	}
 
 	return NewCharacters(list)
@@ -70,13 +85,18 @@ func (c *Characters) All() []Character {
 	return cloneList(c.list)
 }
 
-// GetCharacter は、指定されたIDからキャラクター情報を特定します。ID照合は大小文字を
-// 無視します。見つかった場合はそのコピーへのポインタを、存在しない場合は nil を返します。
+// GetCharacter は、指定されたIDからキャラクター情報を特定します。ID照合は大小文字と
+// 前後の空白を無視します。見つかった場合はそのコピーへのポインタを、存在しない場合は
+// nil を返します。
+//
+// 前後の空白を無視するのは、ID がレシピや台本といった AI の出力や人の入力から来るためです。
+// 定義側の ID は前後の空白を禁じているので、検索キーを整えても取り違えは起きません。
+// これが無いと、呼び出し側の全員が GetCharacter(strings.TrimSpace(id)) と書くことになります。
 func (c *Characters) GetCharacter(id string) *Character {
 	if c == nil {
 		return nil
 	}
-	char, ok := c.byID[strings.ToLower(id)]
+	char, ok := c.byID[lookupKey(id)]
 	if !ok {
 		return nil
 	}
@@ -110,17 +130,22 @@ func (c *Characters) WithSeedOverride(id string, seed int64) *Characters {
 	if c == nil {
 		return nil
 	}
-	if _, ok := c.byID[strings.ToLower(id)]; !ok {
+	if _, ok := c.byID[lookupKey(id)]; !ok {
 		return c
 	}
 	list := c.All()
 	for i := range list {
-		if strings.EqualFold(list[i].ID, id) {
+		if lookupKey(list[i].ID) == lookupKey(id) {
 			overridden := seed
 			list[i].Seed = &overridden
 		}
 	}
 	return newValidated(list)
+}
+
+// lookupKey は、ID の照合に使うキーを返します。定義側も検索側もこれで揃えます。
+func lookupKey(id string) string {
+	return strings.ToLower(strings.TrimSpace(id))
 }
 
 // aspectRatioKeyPattern は reference_urls のキーとして許可する "16:9" 形式です。
@@ -149,8 +174,8 @@ func validateList(list []Character) error {
 		if strings.TrimSpace(char.Name) == "" {
 			return fmt.Errorf("キャラクター名が空です (id: %s)", id)
 		}
-		if strings.TrimSpace(char.ReferenceURL) == "" {
-			return fmt.Errorf("参照画像URLが空です (id: %s)", id)
+		if err := validateURL(char.ReferenceURL, "参照画像URL", fmt.Sprintf("id: %s", id)); err != nil {
+			return err
 		}
 		if len(char.VisualCues) == 0 {
 			return fmt.Errorf("visual_cuesが空です (id: %s)", id)
@@ -159,8 +184,8 @@ func validateList(list []Character) error {
 			if !aspectRatioKeyPattern.MatchString(ratio) {
 				return fmt.Errorf("reference_urlsのアスペクト比キーが不正です (id: %s, key: %q): \"16:9\" のような形式で指定してください", id, ratio)
 			}
-			if strings.TrimSpace(char.ReferenceURLs[ratio]) == "" {
-				return fmt.Errorf("reference_urlsのURLが空です (id: %s, key: %s)", id, ratio)
+			if err := validateURL(char.ReferenceURLs[ratio], "reference_urlsのURL", fmt.Sprintf("id: %s, key: %s", id, ratio)); err != nil {
+				return err
 			}
 		}
 		if char.IsDefault {
@@ -169,6 +194,22 @@ func validateList(list []Character) error {
 	}
 	if len(defaultIDs) > 1 {
 		return fmt.Errorf("デフォルトキャラクターが複数あります: %s", strings.Join(defaultIDs, ", "))
+	}
+	return nil
+}
+
+// validateURL は参照画像URLが空でなく、前後に空白を持たないことを確かめます。
+//
+// 空白を落として通すのではなく拒むのは、ID と同じ扱いにするためです。ここで拒んで
+// おけば、検証済みの Character の ReferenceURLFor は空も空白も返さないと保証でき、
+// 呼び出し側が戻り値を TrimSpace してから判定する必要がなくなります。
+func validateURL(url, what, where string) error {
+	trimmed := strings.TrimSpace(url)
+	if trimmed == "" {
+		return fmt.Errorf("%sが空です (%s)", what, where)
+	}
+	if url != trimmed {
+		return fmt.Errorf("%sに前後の空白があります (%s): %q", what, where, url)
 	}
 	return nil
 }
