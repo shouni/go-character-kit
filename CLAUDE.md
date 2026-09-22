@@ -70,6 +70,17 @@ Two packages, at the repository root — no `pkg/` prefix.
   target shape — feeding a wide three-pose sheet into a portrait keyframe is what makes colours,
   props and hair drift between generations. The rationale sits on the `ReferenceURLs` field's doc
   comment; keep it there when the field changes.
+- **Field names are validated too, and lookups tolerate padding.** `ParseCharacters` decodes with
+  `DisallowUnknownFields` and rejects trailing data, for the same reason ratio keys are checked: a
+  typo like `"sead"` or `"referense_urls"` used to parse cleanly and just silently change the
+  output (seed nil, ratio-specific reference falling back to the default). On the other side,
+  `GetCharacter` / `WithSeedOverride` trim the *lookup* key (`lookupKey`), because IDs arrive from
+  model output and forms; the definition side already forbids padded IDs, so trimming loses
+  nothing — and without it every caller writes `GetCharacter(strings.TrimSpace(id))`, which four
+  did. Reference URLs are held to the same rule as IDs — padded ones are rejected at construction —
+  so a validated character's `ReferenceURLFor` never returns whitespace and callers can drop their
+  `TrimSpace` around it. **Bumping this in a consumer is a behaviour change for its production
+  roster**: a `characters.json` with an unknown field now fails at startup instead of loading.
 - **Ratio keys are validated for shape, not for membership.** `aspectRatioKeyPattern` accepts any
   `\d+:\d+`, so this module has no opinion on which ratios exist — that vocabulary belongs to the
   generation kits. The check exists only to catch the typo (`"16x9"`) that would otherwise fail

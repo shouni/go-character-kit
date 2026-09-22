@@ -102,6 +102,43 @@ func TestParseCharactersBuildsListAndLookup(t *testing.T) {
 	}
 }
 
+// フィールド名の打ち間違いを黙って読み飛ばさないこと。読み飛ばすと Seed が nil に
+// なったり比率別の参照画像が既定へ落ちたりするだけで、何も言わずに生成結果が変わります。
+func TestParseCharactersRejectsUnknownFields(t *testing.T) {
+	t.Parallel()
+
+	for name, body := range map[string]string{
+		"sead":           `[{"id":"a","name":"A","reference_url":"gs://b/a.png","visual_cues":["x"],"sead":1}]`,
+		"referense_urls": `[{"id":"a","name":"A","reference_url":"gs://b/a.png","visual_cues":["x"],"referense_urls":{"16:9":"gs://b/w.png"}}]`,
+		"is_defalt":      `[{"id":"a","name":"A","reference_url":"gs://b/a.png","visual_cues":["x"],"is_defalt":true}]`,
+		"trailing data":  `[{"id":"a","name":"A","reference_url":"gs://b/a.png","visual_cues":["x"]}] {"id":"b"}`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			if _, err := ParseCharacters([]byte(body)); err == nil {
+				t.Fatalf("ParseCharacters() error = nil, want an error for %s", name)
+			}
+		})
+	}
+}
+
+// ID の照合は前後の空白を無視すること。ID はレシピや台本といった AI の出力から来るため、
+// これが無いと呼び出し側の全員が GetCharacter(strings.TrimSpace(id)) と書くことになります。
+func TestLookupIgnoresSurroundingWhitespace(t *testing.T) {
+	t.Parallel()
+
+	chars, err := NewCharacters(validList())
+	if err != nil {
+		t.Fatalf("NewCharacters() error = %v", err)
+	}
+	if got := chars.GetCharacter("  Zundamon\n"); got == nil || got.ID != "zundamon" {
+		t.Errorf("GetCharacter(padded) = %+v, want zundamon", got)
+	}
+	if got := chars.WithSeedOverride(" zundamon ", 7); got == chars || *got.GetCharacter("zundamon").Seed != 7 {
+		t.Errorf("WithSeedOverride(padded) did not override the seed")
+	}
+}
+
 func TestParseCharactersRejectsInvalidJSON(t *testing.T) {
 	t.Parallel()
 
@@ -324,6 +361,16 @@ func TestNewCharactersValidation(t *testing.T) {
 			name:    "不正なアスペクト比キー",
 			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16x9": "gs://bucket/a.png"} }),
 			wantErr: "アスペクト比キーが不正です",
+		},
+		{
+			name:    "参照URLの前後空白",
+			list:    base(func(l []Character) { l[0].ReferenceURL = " gs://bucket/a.png " }),
+			wantErr: "参照画像URLに前後の空白があります",
+		},
+		{
+			name:    "reference_urlsのURLの前後空白",
+			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16:9": "gs://bucket/a.png\n"} }),
+			wantErr: "reference_urlsのURLに前後の空白があります",
 		},
 		{
 			name:    "reference_urlsの空URL",
