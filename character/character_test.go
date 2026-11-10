@@ -102,8 +102,8 @@ func TestParseCharactersBuildsListAndLookup(t *testing.T) {
 	}
 }
 
-// フィールド名の打ち間違いを黙って読み飛ばさないこと。読み飛ばすと Seed が nil に
-// なったり比率別の参照画像が既定へ落ちたりするだけで、何も言わずに生成結果が変わります。
+// A misspelled field name must not be skipped silently. Skipping it only leaves Seed nil or
+// drops the ratio-specific reference to the default, and the output changes without a word.
 func TestParseCharactersRejectsUnknownFields(t *testing.T) {
 	t.Parallel()
 
@@ -122,8 +122,8 @@ func TestParseCharactersRejectsUnknownFields(t *testing.T) {
 	}
 }
 
-// ID の照合は前後の空白を無視すること。ID はレシピや台本といった AI の出力から来るため、
-// これが無いと呼び出し側の全員が GetCharacter(strings.TrimSpace(id)) と書くことになります。
+// ID matching must ignore surrounding whitespace. IDs come from AI output such as recipes and
+// scripts, and without this every caller would write GetCharacter(strings.TrimSpace(id)).
 func TestLookupIgnoresSurroundingWhitespace(t *testing.T) {
 	t.Parallel()
 
@@ -153,7 +153,7 @@ func TestNewCharactersCopiesInput(t *testing.T) {
 	list := validList()
 	chars := mustNewCharacters(t, list)
 
-	// 入力スライスを書き換えても集合には影響しない。
+	// Mutating the input slice does not affect the collection.
 	list[0].Name = "mutated"
 	list[0].VisualCues[0] = "mutated"
 	list[0].ReferenceURLs["16:9"] = "mutated"
@@ -179,7 +179,7 @@ func TestAccessorsReturnCopies(t *testing.T) {
 
 	chars := mustNewCharacters(t, validList())
 
-	// 返り値を書き換えても集合には影響しない。
+	// Mutating the returned values does not affect the collection.
 	all := chars.All()
 	all[0].Name = "mutated"
 	all[0].VisualCues[0] = "mutated"
@@ -211,7 +211,7 @@ func TestWithSeedOverride(t *testing.T) {
 	if seed := overridden.GetCharacter("zundamon").Seed; seed == nil || *seed != 999 {
 		t.Errorf("overridden zundamon Seed = %v, want 999", seed)
 	}
-	// 他のキャラクターと元の集合は変わらない。
+	// Other characters and the original collection stay unchanged.
 	if seed := overridden.GetCharacter("metan").Seed; seed != nil {
 		t.Errorf("metan Seed = %v, want nil", seed)
 	}
@@ -320,67 +320,67 @@ func TestNewCharactersValidation(t *testing.T) {
 		{
 			name:    "空リスト",
 			list:    []Character{},
-			wantErr: "キャラクター定義が空です",
+			wantErr: "character definitions are empty",
 		},
 		{
 			name:    "nilリスト",
 			list:    nil,
-			wantErr: "キャラクター定義が空です",
+			wantErr: "character definitions are empty",
 		},
 		{
 			name:    "空ID",
 			list:    base(func(l []Character) { l[0].ID = "" }),
-			wantErr: "キャラクターIDが空です",
+			wantErr: "character ID is empty",
 		},
 		{
 			name:    "IDの前後空白",
 			list:    base(func(l []Character) { l[0].ID = " zundamon " }),
-			wantErr: "前後の空白があります",
+			wantErr: "character ID has leading or trailing whitespace",
 		},
 		{
 			name:    "大小文字を無視した重複ID",
 			list:    base(func(l []Character) { l[1].ID = "ZUNDAMON" }),
-			wantErr: "キャラクターIDが重複しています",
+			wantErr: "duplicate character ID",
 		},
 		{
 			name:    "空の名前",
 			list:    base(func(l []Character) { l[0].Name = " " }),
-			wantErr: "キャラクター名が空です",
+			wantErr: "character name is empty",
 		},
 		{
 			name:    "空の参照URL",
 			list:    base(func(l []Character) { l[0].ReferenceURL = "" }),
-			wantErr: "参照画像URLが空です",
+			wantErr: "reference_url is empty",
 		},
 		{
 			name:    "空のvisual_cues",
 			list:    base(func(l []Character) { l[0].VisualCues = nil }),
-			wantErr: "visual_cuesが空です",
+			wantErr: "visual_cues is empty",
 		},
 		{
 			name:    "不正なアスペクト比キー",
 			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16x9": "gs://bucket/a.png"} }),
-			wantErr: "アスペクト比キーが不正です",
+			wantErr: "invalid reference_urls aspect-ratio key",
 		},
 		{
 			name:    "参照URLの前後空白",
 			list:    base(func(l []Character) { l[0].ReferenceURL = " gs://bucket/a.png " }),
-			wantErr: "参照画像URLに前後の空白があります",
+			wantErr: "reference_url has leading or trailing whitespace",
 		},
 		{
 			name:    "reference_urlsのURLの前後空白",
 			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16:9": "gs://bucket/a.png\n"} }),
-			wantErr: "reference_urlsのURLに前後の空白があります",
+			wantErr: "reference_urls URL has leading or trailing whitespace",
 		},
 		{
 			name:    "reference_urlsの空URL",
 			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16:9": " "} }),
-			wantErr: "reference_urlsのURLが空です",
+			wantErr: "reference_urls URL is empty",
 		},
 		{
 			name:    "複数デフォルト",
 			list:    base(func(l []Character) { l[1].IsDefault = true }),
-			wantErr: "デフォルトキャラクターが複数あります: zundamon, metan",
+			wantErr: "more than one default character: zundamon, metan",
 		},
 	}
 

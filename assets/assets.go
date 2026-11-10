@@ -1,4 +1,4 @@
-// Package assets は、既定のキャラクター定義を埋め込みリソースとして提供します。
+// Package assets provides the bundled character definitions as an embedded resource.
 package assets
 
 import (
@@ -7,12 +7,12 @@ import (
 	"github.com/shouni/go-character-kit/character"
 )
 
-// characterData は埋め込まれたキャラクター定義です。
+// characterData holds the embedded character definitions.
 //
 //go:embed characters/characters.json
 var characterData []byte
 
-// LoadCharacters は埋め込まれたキャラクター定義を読み込みます。
+// LoadCharacters loads the embedded character definitions.
 func LoadCharacters() (*character.Characters, error) {
 	return character.ParseCharacters(characterData)
 }
