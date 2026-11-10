@@ -97,8 +97,8 @@ Two packages, at the repository root — no `pkg/` prefix.
   comments, doc comments (pkg.go.dev style), error and validation messages, log and panic
   messages, and test assertion messages. Error strings follow Go style — lowercase, no trailing
   punctuation (ST1005). Japanese stays only as data, such as character definitions whose text
-  becomes prompt input. Subtest names (`t.Run` / table `name` fields) are still Japanese and may
-  be translated later.
+  becomes prompt input. Subtest names (`t.Run` / table `name` fields) are English
+  too.
 - Tests are standard-library only (`testing` + hand-written comparisons), table-driven where the
   cases justify it, and named for the behaviour they pin (`TestAccessorsReturnCopies`,
   `TestNilReceiverSafety`). The copy-on-read and nil-receiver guarantees above are load-bearing for

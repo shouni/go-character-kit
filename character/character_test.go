@@ -318,67 +318,67 @@ func TestNewCharactersValidation(t *testing.T) {
 		wantErr string
 	}{
 		{
-			name:    "空リスト",
+			name:    "empty list",
 			list:    []Character{},
 			wantErr: "character definitions are empty",
 		},
 		{
-			name:    "nilリスト",
+			name:    "nil list",
 			list:    nil,
 			wantErr: "character definitions are empty",
 		},
 		{
-			name:    "空ID",
+			name:    "empty ID",
 			list:    base(func(l []Character) { l[0].ID = "" }),
 			wantErr: "character ID is empty",
 		},
 		{
-			name:    "IDの前後空白",
+			name:    "ID with surrounding whitespace",
 			list:    base(func(l []Character) { l[0].ID = " zundamon " }),
 			wantErr: "character ID has leading or trailing whitespace",
 		},
 		{
-			name:    "大小文字を無視した重複ID",
+			name:    "case-insensitive duplicate ID",
 			list:    base(func(l []Character) { l[1].ID = "ZUNDAMON" }),
 			wantErr: "duplicate character ID",
 		},
 		{
-			name:    "空の名前",
+			name:    "empty name",
 			list:    base(func(l []Character) { l[0].Name = " " }),
 			wantErr: "character name is empty",
 		},
 		{
-			name:    "空の参照URL",
+			name:    "empty reference URL",
 			list:    base(func(l []Character) { l[0].ReferenceURL = "" }),
 			wantErr: "reference_url is empty",
 		},
 		{
-			name:    "空のvisual_cues",
+			name:    "empty visual_cues",
 			list:    base(func(l []Character) { l[0].VisualCues = nil }),
 			wantErr: "visual_cues is empty",
 		},
 		{
-			name:    "不正なアスペクト比キー",
+			name:    "invalid aspect-ratio key",
 			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16x9": "gs://bucket/a.png"} }),
 			wantErr: "invalid reference_urls aspect-ratio key",
 		},
 		{
-			name:    "参照URLの前後空白",
+			name:    "reference URL with surrounding whitespace",
 			list:    base(func(l []Character) { l[0].ReferenceURL = " gs://bucket/a.png " }),
 			wantErr: "reference_url has leading or trailing whitespace",
 		},
 		{
-			name:    "reference_urlsのURLの前後空白",
+			name:    "reference_urls URL with surrounding whitespace",
 			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16:9": "gs://bucket/a.png\n"} }),
 			wantErr: "reference_urls URL has leading or trailing whitespace",
 		},
 		{
-			name:    "reference_urlsの空URL",
+			name:    "reference_urls empty URL",
 			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16:9": " "} }),
 			wantErr: "reference_urls URL is empty",
 		},
 		{
-			name:    "複数デフォルト",
+			name:    "multiple defaults",
 			list:    base(func(l []Character) { l[1].IsDefault = true }),
 			wantErr: "more than one default character: zundamon, metan",
 		},
