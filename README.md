@@ -8,32 +8,34 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Go Reference](https://pkg.go.dev/badge/github.com/shouni/go-character-kit.svg)](https://pkg.go.dev/github.com/shouni/go-character-kit)
 
-## 🚀 概要 (About) - Seed と参照アセットを固定して、キャラクターをぶれさせない
+English | [日本語](README.ja.md)
 
-**Go Character Kit** は、画像生成・漫画生成ワークフローで利用する **キャラクターDNA** を、JSON 定義として安全に読み込み・検証・参照するための小さな Go ライブラリです。
+## 🚀 About - Pin the seed and reference assets so characters stay consistent
 
-キャラクターごとの **Seed値**、**参照アセットURL**、**VisualCues/外見指示**、**デフォルトキャラクター** を一元管理し、生成パイプライン側から安定して利用できる形に整えます。
+**Go Character Kit** is a small Go library that safely loads, validates and looks up **character DNA**, defined as JSON, for image and comic generation workflows.
+
+It keeps each character's **seed**, **reference asset URLs**, **visual cues / appearance directions** and the **default character** in one place, in a form the generation pipeline can rely on.
 
 ---
 
-## ✨ 提供機能 (Features)
+## ✨ Features
 
 * **🧬 Character DNA Definition**:
-  * `id` / `name` / `seed` / `reference_url` / `reference_urls` / `visual_cues` をまとめて定義し、キャラクターの一貫性維持に必要な情報を扱います。
+  * Defines `id` / `name` / `seed` / `reference_url` / `reference_urls` / `visual_cues` together — the information needed to keep a character consistent.
 * **🔒 Immutable Collection**:
-  * `Characters` は構築時に検証・複製され、以降は読み取り専用です。参照系APIはコピーを返すため、利用側から内部状態を壊せません。
+  * `Characters` is validated and copied at construction and is read-only afterwards. The lookup APIs return copies, so callers cannot corrupt its internal state.
 * **🔍 Safe Lookup Helpers**:
-  * ID 検索（大小文字を吸収）、未指定時のデフォルトキャラクター fallback、アスペクト比別参照URLの解決（`ReferenceURLFor`）、Seed差し替え済み集合の派生（`WithSeedOverride`）を提供します。
+  * Lookup by ID (case-insensitive), fallback to the default character when no ID is given, per-aspect-ratio reference URL resolution (`ReferenceURLFor`), and derivation of a collection with a replaced seed (`WithSeedOverride`).
 * **🛡 Validation First**:
-  * 設定ミスをパース時に検出します（詳細は[バリデーション](#-バリデーション-validation)）。
+  * Configuration mistakes are caught at parse time (see [Validation](#-validation)).
 * **📦 Embedded Character Assets**:
-  * `assets` パッケージから、リポジトリ同梱のキャラクター定義JSONを `go:embed` されたデータとして読み込めます。
+  * The `assets` package loads the character definition JSON bundled with the repository as `go:embed`-ed data.
 
 ---
 
-## 🎨 キャラクター定義 (Character Definition)
+## 🎨 Character Definition
 
-キャラクターは JSON 配列として定義します。
+Characters are defined as a JSON array.
 
 ```json
 [
@@ -56,21 +58,21 @@
 ]
 ```
 
-| フィールド | 必須 | 内容 |
+| Field | Required | Description |
 | --- | --- | --- |
-| `id` | ✅ | キャラクターを識別する安定ID。前後の空白は許可されません。 |
-| `name` | ✅ | 表示名・管理名。 |
-| `visual_cues` | ✅ | 生成プロンプトへ注入する外見上の特徴。 |
-| `reference_url` | ✅ | 一貫性保持のための参照画像URL（既定のフォールバック）。`gs://...` などを指定可能。 |
-| `reference_urls` | - | `"16:9"` のようなアスペクト比文字列をキーにした参照画像URL。`ReferenceURLFor` が生成対象と同じアスペクト比のエントリを優先して解決します。 |
-| `seed` | - | キャラクターに紐づく任意の生成シード。 |
-| `is_default` | - | fallback 用のデフォルトキャラクター。指定できるのは1人まで。 |
+| `id` | ✅ | A stable ID identifying the character. Leading or trailing whitespace is not allowed. |
+| `name` | ✅ | Display / management name. |
+| `visual_cues` | ✅ | Visual traits injected into the generation prompt. |
+| `reference_url` | ✅ | Reference image URL for consistency (the default fallback). Accepts `gs://...` and the like. |
+| `reference_urls` | - | Reference image URLs keyed by an aspect-ratio string such as `"16:9"`. `ReferenceURLFor` prefers the entry matching the aspect ratio being generated. |
+| `seed` | - | An optional generation seed tied to the character. |
+| `is_default` | - | The default character used for fallback. At most one may be set. |
 
 ---
 
-## 🚦 使い方 (Usage)
+## 🚦 Usage
 
-### 1. JSON から読み込む
+### 1. Load from JSON
 
 ```go
 package main
@@ -102,7 +104,7 @@ func main() {
 }
 ```
 
-### 2. Go の構造体から初期化する
+### 2. Initialize from Go structs
 
 ```go
 chars, err := character.NewCharacters([]character.Character{
@@ -116,51 +118,51 @@ chars, err := character.NewCharacters([]character.Character{
 })
 ```
 
-### 3. 同梱キャラクター定義を読み込む
+### 3. Load the bundled character definitions
 
 ```go
 chars, err := assets.LoadCharacters() // import "github.com/shouni/go-character-kit/assets"
 ```
 
-### 4. 検索・派生ヘルパー
+### 4. Lookup and derivation helpers
 
 ```go
-chars.Len()                            // キャラクター数
-chars.All()                            // 定義順の一覧（コピー）
-chars.GetCharacter("ZUNDAMON")         // 大小文字を無視したID検索。無ければ nil
-chars.GetDefault()                     // is_default のキャラクター。無ければ nil
-chars.GetCharacterWithDefault("xxx")   // 見つからなければデフォルトに fallback
-char.ReferenceURLFor("9:16")           // アスペクト比に合う参照URL。無ければ reference_url
+chars.Len()                            // number of characters
+chars.All()                            // all characters in definition order (a copy)
+chars.GetCharacter("ZUNDAMON")         // case-insensitive lookup by ID; nil if absent
+chars.GetDefault()                     // the is_default character; nil if none
+chars.GetCharacterWithDefault("xxx")   // falls back to the default when not found
+char.ReferenceURLFor("9:16")           // reference URL for the aspect ratio; reference_url if none
 
-// zundamon の Seed だけ差し替えた新しい集合を派生（元の集合は不変）
+// Derive a new collection with only zundamon's seed replaced (the original is unchanged)
 overridden := chars.WithSeedOverride("zundamon", 999)
 ```
 
 ---
 
-## 📦 パッケージ構成 (Package Structure)
+## 📦 Package Structure
 
-| パッケージ | 内容 |
+| Package | Contents |
 | --- | --- |
-| `github.com/shouni/go-character-kit/character` | キャラクターのドメインモデル、初期化、JSONパース、検証、検索ヘルパー。 |
-| `github.com/shouni/go-character-kit/assets` | `go:embed` された同梱キャラクター定義JSONの読み込み。 |
+| `github.com/shouni/go-character-kit/character` | The character domain model, construction, JSON parsing, validation and lookup helpers. |
+| `github.com/shouni/go-character-kit/assets` | Loading of the bundled, `go:embed`-ed character definition JSON. |
 
 ---
 
-## 🛡 バリデーション (Validation)
+## 🛡 Validation
 
-`NewCharacters` / `ParseCharacters` は、初期化時に以下の設定ミスを検出します。
+`NewCharacters` / `ParseCharacters` catch the following configuration mistakes at construction:
 
-* キャラクター定義が空（空配列・nil）
-* `id` / `name` / `reference_url` / `visual_cues` の不足
-* `id` の前後空白
-* 大小文字を無視した重複ID
-* `reference_urls` のアスペクト比キーの形式不正（`"16:9"` 形式のみ許可。`"16x9"` などのタイポを検出）
-* `reference_urls` の空URL
-* `is_default` が複数指定されている状態（該当IDをエラーメッセージに列挙）
+* An empty character definition (empty array or nil)
+* Missing `id` / `name` / `reference_url` / `visual_cues`
+* Leading or trailing whitespace in `id`
+* Duplicate IDs, compared case-insensitively
+* Malformed aspect-ratio keys in `reference_urls` (only the `"16:9"` form is allowed, which catches typos such as `"16x9"`)
+* Empty URLs in `reference_urls`
+* More than one `is_default` (the offending IDs are listed in the error message)
 
 ---
 
-## 📜 ライセンス (License)
+## 📜 License
 
-このプロジェクトは [MIT License](LICENSE) の下で公開されています。
+This project is released under the [MIT License](LICENSE).

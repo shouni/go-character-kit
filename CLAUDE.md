@@ -93,10 +93,16 @@ Two packages, at the repository root — no `pkg/` prefix.
 
 ## Conventions
 
-- Doc comments, error messages and validation text are in **Japanese**, in です／ます style.
+- **English everywhere in code and docs** (moved 2026-11-10; do not mix Japanese back in):
+  comments, doc comments (pkg.go.dev style), error and validation messages, log and panic
+  messages, and test assertion messages. Error strings follow Go style — lowercase, no trailing
+  punctuation (ST1005). Japanese stays only as data, such as character definitions whose text
+  becomes prompt input. Subtest names (`t.Run` / table `name` fields) are English
+  too.
 - Tests are standard-library only (`testing` + hand-written comparisons), table-driven where the
   cases justify it, and named for the behaviour they pin (`TestAccessorsReturnCopies`,
   `TestNilReceiverSafety`). The copy-on-read and nil-receiver guarantees above are load-bearing for
   the consumers, so they each have a dedicated test — do not fold them into a broader case.
-- README.md is the user-facing entry point (definition format, validation list, usage). Keep the
+- README.md is the user-facing entry point (definition format, validation list, usage), in
+  English; `README.ja.md` is its Japanese version, and the two are updated together. Keep the
   field table and the validation list in sync when changing either.
