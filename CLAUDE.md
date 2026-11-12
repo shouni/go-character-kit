@@ -70,6 +70,19 @@ Two packages, at the repository root — no `pkg/` prefix.
   target shape — feeding a wide three-pose sheet into a portrait keyframe is what makes colours,
   props and hair drift between generations. The rationale sits on the `ReferenceURLs` field's doc
   comment; keep it there when the field changes.
+- **`reference_url` is optional.** A new character has no image until her first design sheet is
+  drawn, and that sheet has to come from `visual_cues` alone: generation prompts treat an attached
+  reference as the ground truth, so a blank placeholder (the stopgap used for Akari on 2026-11-12)
+  would be "the truth". `ReferenceURLFor` therefore returns `""` for such a character, and callers
+  must skip it rather than attach it — panels, pages and ap-music's cover art already did. A
+  whitespace-only value is still rejected: it is a typo, not "no reference".
+- **Supplementary sheets live in `sheets`, keyed by a closed list of kinds** (`SheetExpressions`,
+  `SheetOutfit`, `SheetParts`). They are not reference images: the anchor stays full-body only,
+  because insets and detached parts on an anchor made the model split or fuse figures, so the face
+  in several moods and the accessories laid out singly get sheets of their own, attached next to
+  the anchor when a caller needs them (ap-music's cover art with the parts sheet, to keep the
+  armband on the right arm). Unknown kinds are rejected like unknown fields. `SheetKinds()` returns
+  a copy so a caller cannot widen what validation accepts.
 - **Field names are validated too, and lookups tolerate padding.** `ParseCharacters` decodes with
   `DisallowUnknownFields` and rejects trailing data, for the same reason ratio keys are checked: a
   typo like `"sead"` or `"referense_urls"` used to parse cleanly and just silently change the

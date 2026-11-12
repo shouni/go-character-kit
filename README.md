@@ -63,8 +63,9 @@ Characters are defined as a JSON array.
 | `id` | ✅ | A stable ID identifying the character. Leading or trailing whitespace is not allowed. |
 | `name` | ✅ | Display / management name. |
 | `visual_cues` | ✅ | Visual traits injected into the generation prompt. |
-| `reference_url` | ✅ | Reference image URL for consistency (the default fallback). Accepts `gs://...` and the like. |
+| `reference_url` | - | Reference image URL for consistency (the default fallback). Accepts `gs://...` and the like. Leave it out for a new character that has no image yet: her first design sheet is drawn from `visual_cues` alone, and `ReferenceURLFor` returns `""`. |
 | `reference_urls` | - | Reference image URLs keyed by an aspect-ratio string such as `"16:9"`. `ReferenceURLFor` prefers the entry matching the aspect ratio being generated. |
+| `sheets` | - | Supplementary design sheets keyed by kind: `expressions` (the same face in several moods), `outfit` (the costume, front and back), `parts` (accessories laid out singly). They sit beside `reference_url`, the full-body identity anchor, and `SheetURL(kind)` returns `""` for one not drawn yet. Any other key is rejected. |
 | `seed` | - | An optional generation seed tied to the character. |
 | `is_default` | - | The default character used for fallback. At most one may be set. |
 
@@ -154,11 +155,13 @@ overridden := chars.WithSeedOverride("zundamon", 999)
 `NewCharacters` / `ParseCharacters` catch the following configuration mistakes at construction:
 
 * An empty character definition (empty array or nil)
-* Missing `id` / `name` / `reference_url` / `visual_cues`
+* Missing `id` / `name` / `visual_cues`
+* Leading or trailing whitespace in `reference_url` (a whitespace-only value included; leaving it out is fine)
 * Leading or trailing whitespace in `id`
 * Duplicate IDs, compared case-insensitively
 * Malformed aspect-ratio keys in `reference_urls` (only the `"16:9"` form is allowed, which catches typos such as `"16x9"`)
 * Empty URLs in `reference_urls`
+* Unknown keys in `sheets` (only `expressions` / `outfit` / `parts`), and empty or padded URLs in it
 * More than one `is_default` (the offending IDs are listed in the error message)
 
 ---

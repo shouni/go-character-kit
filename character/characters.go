@@ -175,8 +175,10 @@ func validateList(list []Character) error {
 		if strings.TrimSpace(char.Name) == "" {
 			return fmt.Errorf("character name is empty (id: %s)", id)
 		}
-		if err := validateURL(char.ReferenceURL, "reference_url", fmt.Sprintf("id: %s", id)); err != nil {
-			return err
+		if char.ReferenceURL != "" {
+			if err := validateURL(char.ReferenceURL, "reference_url", fmt.Sprintf("id: %s", id)); err != nil {
+				return err
+			}
 		}
 		if len(char.VisualCues) == 0 {
 			return fmt.Errorf("visual_cues is empty (id: %s)", id)
@@ -186,6 +188,14 @@ func validateList(list []Character) error {
 				return fmt.Errorf("invalid reference_urls aspect-ratio key (id: %s, key: %q): use the form \"16:9\"", id, ratio)
 			}
 			if err := validateURL(char.ReferenceURLs[ratio], "reference_urls URL", fmt.Sprintf("id: %s, key: %s", id, ratio)); err != nil {
+				return err
+			}
+		}
+		for _, kind := range slices.Sorted(maps.Keys(char.Sheets)) {
+			if !slices.Contains(sheetKinds, kind) {
+				return fmt.Errorf("unknown sheets kind (id: %s, kind: %q): use one of %s", id, kind, strings.Join(sheetKinds, ", "))
+			}
+			if err := validateURL(char.Sheets[kind], "sheets URL", fmt.Sprintf("id: %s, kind: %s", id, kind)); err != nil {
 				return err
 			}
 		}
@@ -203,15 +213,18 @@ func validateList(list []Character) error {
 // whitespace.
 //
 // Whitespace is rejected rather than trimmed so that URLs are treated the same as IDs. Rejecting
-// it here guarantees that ReferenceURLFor on a validated Character never returns an empty or
-// padded string, so callers need not TrimSpace the result before checking it.
+// it here guarantees that ReferenceURLFor on a validated Character never returns a padded string,
+// so callers need not TrimSpace the result before checking it for empty. reference_url itself is
+// optional (see Character.ReferenceURL) and checked only when set: a whitespace-only value is
+// still an error, since it is a typo rather than "no reference".
 func validateURL(url, what, where string) error {
+	// Whitespace first: an optional reference_url set to " " must say "whitespace", not "empty"
 	trimmed := strings.TrimSpace(url)
-	if trimmed == "" {
-		return fmt.Errorf("%s is empty (%s)", what, where)
-	}
 	if url != trimmed {
 		return fmt.Errorf("%s has leading or trailing whitespace (%s): %q", what, where, url)
+	}
+	if trimmed == "" {
+		return fmt.Errorf("%s is empty (%s)", what, where)
 	}
 	return nil
 }
