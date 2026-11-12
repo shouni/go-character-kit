@@ -63,8 +63,9 @@
 | `id` | ✅ | キャラクターを識別する安定ID。前後の空白は許可されません。 |
 | `name` | ✅ | 表示名・管理名。 |
 | `visual_cues` | ✅ | 生成プロンプトへ注入する外見上の特徴。 |
-| `reference_url` | ✅ | 一貫性保持のための参照画像URL（既定のフォールバック）。`gs://...` などを指定可能。 |
+| `reference_url` | - | 一貫性保持のための参照画像URL（既定のフォールバック）。`gs://...` などを指定可能。まだ画像のない新しいキャラクターは省略できます。最初の設定画は `visual_cues` だけで描き、`ReferenceURLFor` は `""` を返します。 |
 | `reference_urls` | - | `"16:9"` のようなアスペクト比文字列をキーにした参照画像URL。`ReferenceURLFor` が生成対象と同じアスペクト比のエントリを優先して解決します。 |
+| `sheets` | - | 種類ごとの補助の設定画。`expressions`（同じ顔で複数の表情）、`outfit`（衣装の前と後ろ）、`parts`（小物を単体で並べたもの）。全身の基準画像である `reference_url` とは別に持ち、まだ描いていない種類は `SheetURL(kind)` が `""` を返します。ほかのキーはエラーです。 |
 | `seed` | - | キャラクターに紐づく任意の生成シード。 |
 | `is_default` | - | fallback 用のデフォルトキャラクター。指定できるのは1人まで。 |
 
@@ -154,11 +155,13 @@ overridden := chars.WithSeedOverride("zundamon", 999)
 `NewCharacters` / `ParseCharacters` は、初期化時に以下の設定ミスを検出します。
 
 * キャラクター定義が空（空配列・nil）
-* `id` / `name` / `reference_url` / `visual_cues` の不足
+* `id` / `name` / `visual_cues` の不足
+* `reference_url` の前後の空白（空白だけの値も含む。省略は可）
 * `id` の前後空白
 * 大小文字を無視した重複ID
 * `reference_urls` のアスペクト比キーの形式不正（`"16:9"` 形式のみ許可。`"16x9"` などのタイポを検出）
 * `reference_urls` の空URL
+* `sheets` の未知のキー（`expressions` / `outfit` / `parts` のみ）と、空・前後に空白のある URL
 * `is_default` が複数指定されている状態（該当IDをエラーメッセージに列挙）
 
 ---

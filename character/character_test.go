@@ -303,6 +303,56 @@ func TestCharacterReferenceURLForNilCharacterReturnsEmpty(t *testing.T) {
 	}
 }
 
+// A new character has no image yet: her first design sheet is drawn from visual_cues alone.
+func TestCharacterWithoutReferenceImageIsAccepted(t *testing.T) {
+	t.Parallel()
+
+	chars, err := ParseCharacters([]byte(`[{"id":"akari","name":"Akari","visual_cues":["silver hair"]}]`))
+	if err != nil {
+		t.Fatalf("ParseCharacters() error = %v, want a character without reference_url accepted", err)
+	}
+	char := chars.GetCharacter("akari")
+	for _, ratio := range []string{"", "16:9"} {
+		if got := char.ReferenceURLFor(ratio); got != "" {
+			t.Errorf("ReferenceURLFor(%q) = %q, want empty", ratio, got)
+		}
+	}
+}
+
+func TestSheetsAreLookedUpByKind(t *testing.T) {
+	t.Parallel()
+
+	chars, err := ParseCharacters([]byte(`[{"id":"akari","name":"Akari","visual_cues":["silver hair"],
+		"reference_url":"gs://b/akari.png","sheets":{"parts":"gs://b/akari-parts.png"}}]`))
+	if err != nil {
+		t.Fatalf("ParseCharacters() error = %v", err)
+	}
+	char := chars.GetCharacter("akari")
+	if got := char.SheetURL(SheetParts); got != "gs://b/akari-parts.png" {
+		t.Errorf("SheetURL(parts) = %q", got)
+	}
+	if got := char.SheetURL(SheetExpressions); got != "" {
+		t.Errorf("SheetURL(expressions) = %q, want empty for a sheet not drawn yet", got)
+	}
+	var none *Character
+	if got := none.SheetURL(SheetParts); got != "" {
+		t.Errorf("nil SheetURL = %q, want empty", got)
+	}
+
+	// the collection is read-only: changing what All returns does not reach it
+	all := chars.All()
+	all[0].Sheets[SheetParts] = "mutated"
+	if got := chars.GetCharacter("akari").SheetURL(SheetParts); got != "gs://b/akari-parts.png" {
+		t.Errorf("SheetURL after mutating All() = %q, want the original", got)
+	}
+
+	kinds := SheetKinds()
+	kinds[0] = "mutated"
+	if SheetKinds()[0] != SheetExpressions {
+		t.Error("changing SheetKinds()'s result changed the accepted kinds")
+	}
+}
+
 func TestNewCharactersValidation(t *testing.T) {
 	t.Parallel()
 
@@ -348,9 +398,10 @@ func TestNewCharactersValidation(t *testing.T) {
 			wantErr: "character name is empty",
 		},
 		{
-			name:    "empty reference URL",
-			list:    base(func(l []Character) { l[0].ReferenceURL = "" }),
-			wantErr: "reference_url is empty",
+			// A whitespace-only value is a typo, not "no reference" (an empty string is allowed)
+			name:    "whitespace-only reference URL",
+			list:    base(func(l []Character) { l[0].ReferenceURL = " " }),
+			wantErr: "reference_url has leading or trailing whitespace",
 		},
 		{
 			name:    "empty visual_cues",
@@ -374,8 +425,23 @@ func TestNewCharactersValidation(t *testing.T) {
 		},
 		{
 			name:    "reference_urls empty URL",
-			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16:9": " "} }),
+			list:    base(func(l []Character) { l[0].ReferenceURLs = map[string]string{"16:9": ""} }),
 			wantErr: "reference_urls URL is empty",
+		},
+		{
+			name:    "unknown sheets kind",
+			list:    base(func(l []Character) { l[0].Sheets = map[string]string{"part": "gs://bucket/p.png"} }),
+			wantErr: `unknown sheets kind (id: zundamon, kind: "part"): use one of expressions, outfit, parts`,
+		},
+		{
+			name:    "sheets empty URL",
+			list:    base(func(l []Character) { l[0].Sheets = map[string]string{SheetParts: ""} }),
+			wantErr: "sheets URL is empty",
+		},
+		{
+			name:    "sheets URL with surrounding whitespace",
+			list:    base(func(l []Character) { l[0].Sheets = map[string]string{SheetOutfit: " gs://bucket/o.png"} }),
+			wantErr: "sheets URL has leading or trailing whitespace",
 		},
 		{
 			name:    "multiple defaults",
